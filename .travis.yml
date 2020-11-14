@@ -1,0 +1,8 @@
+dist: xenial
+language: java
+sudo: false
+jdk: jdk15
+install: true
+cache:
+  directories:
+    - $HOME/.m2
