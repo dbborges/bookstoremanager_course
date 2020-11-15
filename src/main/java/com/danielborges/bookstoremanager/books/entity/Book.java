@@ -1,6 +1,7 @@
 package com.danielborges.bookstoremanager.books.entity;
 
 import com.danielborges.bookstoremanager.authors.entity.Author;
+import com.danielborges.bookstoremanager.entity.Auditable;
 import com.danielborges.bookstoremanager.publishers.entity.Publisher;
 import com.danielborges.bookstoremanager.users.entity.User;
 import lombok.Data;
@@ -9,7 +10,7 @@ import javax.persistence.*;
 
 @Data
 @Entity
-public class Book {
+public class Book extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
