@@ -27,6 +27,9 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import javax.management.RuntimeErrorException;
 
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+
 @ExtendWith(MockitoExtension.class)
 public class AuthorControllerTest {
 
@@ -55,10 +58,10 @@ public class AuthorControllerTest {
     void whenPOSTIsCalledThenStatusCreatedShouldBeReturned() throws Exception {
         AuthorDTO expectedCreatedAuthorDTO = authorDTOBuilder.buildAuthorDTO();
 
-        Mockito.when(authorService.create(expectedCreatedAuthorDTO))
+        when(authorService.create(expectedCreatedAuthorDTO))
                 .thenReturn(expectedCreatedAuthorDTO);
 
-        mockMvc.perform(MockMvcRequestBuilders.post(AUTHOR_API_URL_PATH)
+        mockMvc.perform(post(AUTHOR_API_URL_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonConversionUtils.asJsonString(expectedCreatedAuthorDTO)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -72,10 +75,25 @@ public class AuthorControllerTest {
         AuthorDTO expectedCreatedAuthorDTO = authorDTOBuilder.buildAuthorDTO();
         expectedCreatedAuthorDTO.setName(null);
 
-        mockMvc.perform(MockMvcRequestBuilders.post(AUTHOR_API_URL_PATH)
+        mockMvc.perform(post(AUTHOR_API_URL_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonConversionUtils.asJsonString(expectedCreatedAuthorDTO)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    void whenGETWithValidIdIsCalledThenStatusOKShouldBeReturned() throws Exception {
+        AuthorDTO expectedFoundAuthorDTO = authorDTOBuilder.buildAuthorDTO();
+
+        when(authorService.findById(expectedFoundAuthorDTO.getId()))
+                .thenReturn(expectedFoundAuthorDTO);
+
+        mockMvc.perform(get(AUTHOR_API_URL_PATH + "/" + expectedFoundAuthorDTO.getId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Is.is(expectedFoundAuthorDTO.getId().intValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Is.is(expectedFoundAuthorDTO.getName())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.age", Is.is(expectedFoundAuthorDTO.getAge())));
     }
 
 }

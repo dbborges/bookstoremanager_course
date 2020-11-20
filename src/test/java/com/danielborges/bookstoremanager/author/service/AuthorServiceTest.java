@@ -4,6 +4,7 @@ import com.danielborges.bookstoremanager.author.builder.AuthorDTOBuilder;
 import com.danielborges.bookstoremanager.authors.dto.AuthorDTO;
 import com.danielborges.bookstoremanager.authors.entity.Author;
 import com.danielborges.bookstoremanager.authors.exception.AuthorAlreadyExistsException;
+import com.danielborges.bookstoremanager.authors.exception.AuthorNotFoundException;
 import com.danielborges.bookstoremanager.authors.mapper.AuthorMapper;
 import com.danielborges.bookstoremanager.authors.repository.AuthorRepository;
 import com.danielborges.bookstoremanager.authors.service.AuthorService;
@@ -72,5 +73,28 @@ public class AuthorServiceTest {
 
         assertThrows(AuthorAlreadyExistsException.class, () -> authorService.create(expectedAuthorToCreateDTO));
 
+    }
+
+    @Test
+    void whenValidIdIsGivenThenAnAuthorShouldBeReturned() {
+        AuthorDTO expectedFoundAuthorDTO = authorDTOBuilder.buildAuthorDTO();
+        Author expectedFoundAuthor = authorMapper.toModel(expectedFoundAuthorDTO);
+
+        when(authorRepository.findById(expectedFoundAuthorDTO.getId()))
+                .thenReturn(Optional.of(expectedFoundAuthor));
+
+        AuthorDTO foundAuthorDTO = authorService.findById(expectedFoundAuthorDTO.getId());
+
+        assertThat(foundAuthorDTO, is(equalTo(expectedFoundAuthorDTO)));
+    }
+
+    @Test
+    void whenInvalidIdIsGivenThenAnExceptionShouldBeThrown() {
+        AuthorDTO expectedFoundAuthorDTO = authorDTOBuilder.buildAuthorDTO();
+
+        when(authorRepository.findById(expectedFoundAuthorDTO.getId()))
+                .thenReturn(Optional.empty());
+
+        assertThrows(AuthorNotFoundException.class, () -> authorService.findById(expectedFoundAuthorDTO.getId()));
     }
 }
