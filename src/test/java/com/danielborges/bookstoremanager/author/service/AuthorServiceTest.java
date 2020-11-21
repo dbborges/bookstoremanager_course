@@ -21,6 +21,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.swing.text.html.Option;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 
@@ -96,5 +98,28 @@ public class AuthorServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(AuthorNotFoundException.class, () -> authorService.findById(expectedFoundAuthorDTO.getId()));
+    }
+
+    @Test
+    void whenListAuthorsIsCalledThenItShouldBeReturned() {
+        AuthorDTO expectedFoundAuthorDTO = authorDTOBuilder.buildAuthorDTO();
+        Author expectedFoundAuthor = authorMapper.toModel(expectedFoundAuthorDTO);
+        when(authorRepository.findAll())
+                .thenReturn(Collections.singletonList(expectedFoundAuthor));
+
+        List<AuthorDTO> foundAuthorsDTO = authorService.findAll();
+
+        assertThat(foundAuthorsDTO.size(), is(1));
+        assertThat(foundAuthorsDTO.get(0), is(equalTo(expectedFoundAuthorDTO)));
+    }
+
+    @Test
+    void whenListAuthorsIsCalledThenAnEmptyListShouldBeReturned() {
+        when(authorRepository.findAll())
+                .thenReturn(Collections.EMPTY_LIST);
+
+        List<AuthorDTO> foundAuthorsDTO = authorService.findAll();
+
+        assertThat(foundAuthorsDTO.size(), is(0));
     }
 }
