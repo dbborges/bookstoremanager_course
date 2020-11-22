@@ -20,6 +20,7 @@ public class AuthorService {
 
     private AuthorRepository authorRepository;
 
+    @Autowired
     public AuthorService(AuthorRepository authorRepository){
         this.authorRepository = authorRepository;
     }
