@@ -24,8 +24,11 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import static com.danielborges.bookstoremanager.utils.JsonConversionUtils.asJsonString;
 import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 public class UserControllerTest {
@@ -76,5 +79,17 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(expectedUserToCreateDTO)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    void whenDELETEWithValidIdIsCalledThenNoContentShouldBeReturned() throws Exception {
+        UserDTO expectedUserToCreateDTO = userDTOBuilder.buildUserDTO();
+
+        var expectedUserDeletedId = expectedUserToCreateDTO.getId();
+        doNothing().when(userService).delete(expectedUserDeletedId);
+
+        mockMvc.perform(delete(USERS_API_URL_PATH + "/" + expectedUserDeletedId)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
     }
 }
