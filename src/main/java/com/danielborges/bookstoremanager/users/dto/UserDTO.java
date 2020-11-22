@@ -43,7 +43,7 @@ public class UserDTO {
 
     @NotNull
     @NotEmpty
-    private String senha;
+    private String password;
 
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")

@@ -32,12 +32,12 @@ public class UserDTOBuilder {
     private String username = "danielborges";
 
     @Builder.Default
-    private String senha = "123456";
+    private String password = "123456";
 
     @Builder.Default
     private LocalDate birthDate = LocalDate.of(1990, 8, 12);
 
     public UserDTO buildUserDTO(){
-        return new UserDTO(id, name, age, gender, email, username, senha, birthDate);
+        return new UserDTO(id, name, age, gender, email, username, password, birthDate);
     }
 }
