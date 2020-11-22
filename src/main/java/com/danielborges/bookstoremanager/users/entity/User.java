@@ -34,7 +34,7 @@ public class User extends Auditable {
     private String username;
 
     @Column(nullable = false)
-    private String senha;
+    private String password;
 
     @Column(nullable = false, columnDefinition = "TIMESTAMP")
     private LocalDate birthDate;
