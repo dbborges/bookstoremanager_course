@@ -124,4 +124,28 @@ public class PublisherServiceTest {
 
         assertThat(foundPublishersDTO.size(), is(0));
     }
+
+    @Test
+    void whenValidPublisherIdIsGivenThenItShouldBeDeleted() {
+        PublisherDTO expectedDeletedPublisherDTO = publisherDTOBuilder.buildPublisherDTO();
+        Publisher expectedDeletedPublisher = publisherMapper.toModel(expectedDeletedPublisherDTO);
+        Long expectedDeletedPublisherId = expectedDeletedPublisherDTO.getId();
+
+        doNothing().when(publisherRepository).deleteById(expectedDeletedPublisherId);
+        when(publisherRepository.findById(expectedDeletedPublisherId)).thenReturn(Optional.of(expectedDeletedPublisher));
+
+        publisherService.delete(expectedDeletedPublisherId);
+
+        verify(publisherRepository, times(1)).deleteById(expectedDeletedPublisherId);
+        verify(publisherRepository, times(1)).findById(expectedDeletedPublisherId);
+    }
+
+    @Test
+    void whenInvalidPublisherIdIsGivenThenItAnExceptionShouldBeThrown() {
+        var expectedInvalidPublisherId = 2L;
+
+        when(publisherRepository.findById(expectedInvalidPublisherId)).thenReturn(Optional.empty());
+
+        assertThrows(PublisherNotFoundException.class, () ->publisherService.delete(expectedInvalidPublisherId));
+    }
 }
