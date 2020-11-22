@@ -12,7 +12,9 @@ import com.danielborges.bookstoremanager.publishers.repository.PublisherReposito
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PublisherService {
@@ -39,6 +41,13 @@ public class PublisherService {
         if(duplicatedPublisher.isPresent()){
             throw new PublisherAlreadyExistsException(name, code);
         }
+    }
+
+    public List<PublisherDTO> findAll() {
+        return publisherRepository.findAll()
+                .stream()
+                .map(publisherMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     public PublisherDTO findById(Long id){
