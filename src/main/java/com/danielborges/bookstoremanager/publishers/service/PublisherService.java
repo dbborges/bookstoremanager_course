@@ -35,14 +35,6 @@ public class PublisherService {
         return publisherMapper.toDTO(createdPublisher);
     }
 
-    private void verifyIfExists(String name, String code) {
-        Optional<Publisher> duplicatedPublisher = publisherRepository
-                .findByNameOrCode(name, code);
-        if(duplicatedPublisher.isPresent()){
-            throw new PublisherAlreadyExistsException(name, code);
-        }
-    }
-
     public List<PublisherDTO> findAll() {
         return publisherRepository.findAll()
                 .stream()
@@ -54,5 +46,23 @@ public class PublisherService {
         return publisherRepository.findById(id)
                 .map(publisherMapper::toDTO)
                 .orElseThrow(() -> new PublisherNotFoundException(id));
+    }
+
+    public void delete (Long id) {
+        verifyIfExists(id);
+        publisherRepository.deleteById(id);
+    }
+
+    private void verifyIfExists(String name, String code) {
+        Optional<Publisher> duplicatedPublisher = publisherRepository
+                .findByNameOrCode(name, code);
+        if(duplicatedPublisher.isPresent()){
+            throw new PublisherAlreadyExistsException(name, code);
+        }
+    }
+
+    private void verifyIfExists(Long id) {
+        publisherRepository.findById(id)
+                 .orElseThrow(() -> new PublisherNotFoundException(id));
     }
 }

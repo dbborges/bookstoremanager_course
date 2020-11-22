@@ -23,9 +23,10 @@ import java.util.Collections;
 
 import static com.danielborges.bookstoremanager.utils.JsonConversionUtils.*;
 import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 public class PublisherControllerTest {
@@ -106,5 +107,17 @@ public class PublisherControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", is(expectedFoundPublisherDTO.getId().intValue())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", is(expectedFoundPublisherDTO.getName())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].code", is(expectedFoundPublisherDTO.getCode())));
+    }
+
+    @Test
+    void whenDELETEWithValidIdIsCalledThenNoContentShouldBeReturned() throws Exception {
+        PublisherDTO expectedPublisherDeletedDTO = publisherDTOBuilder.buildPublisherDTO();
+
+        var expectedPublisherDeletedId = expectedPublisherDeletedDTO.getId();
+        doNothing().when(publisherService).delete(expectedPublisherDeletedId);
+
+        mockMvc.perform(delete(PUBLISHERS_API_URL_PATH + "/" + expectedPublisherDeletedId)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
     }
 }
