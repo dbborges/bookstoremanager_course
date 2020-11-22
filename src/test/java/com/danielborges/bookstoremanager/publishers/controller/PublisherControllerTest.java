@@ -19,6 +19,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
+import java.util.Collections;
+
 import static com.danielborges.bookstoremanager.utils.JsonConversionUtils.*;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
@@ -90,5 +92,19 @@ public class PublisherControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id", is(expectedFoundPublisherDTO.getId().intValue())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name", is(expectedFoundPublisherDTO.getName())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.code", is(expectedFoundPublisherDTO.getCode())));
+    }
+
+    @Test
+    void whenGETListIsCalledThenStatusOKShouldBeReturned() throws Exception {
+        PublisherDTO expectedFoundPublisherDTO = publisherDTOBuilder.buildPublisherDTO();
+
+        when(publisherService.findAll()).thenReturn(Collections.singletonList(expectedFoundPublisherDTO));
+
+        mockMvc.perform(get(PUBLISHERS_API_URL_PATH)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", is(expectedFoundPublisherDTO.getId().intValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", is(expectedFoundPublisherDTO.getName())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].code", is(expectedFoundPublisherDTO.getCode())));
     }
 }
