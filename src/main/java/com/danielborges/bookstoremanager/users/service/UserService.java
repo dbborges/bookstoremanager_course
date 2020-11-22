@@ -6,6 +6,7 @@ import com.danielborges.bookstoremanager.users.dto.MessageDTO;
 import com.danielborges.bookstoremanager.users.dto.UserDTO;
 import com.danielborges.bookstoremanager.users.entity.User;
 import com.danielborges.bookstoremanager.users.exception.UserAlreadyExistsexception;
+import com.danielborges.bookstoremanager.users.exception.UserNotFoundException;
 import com.danielborges.bookstoremanager.users.mapper.UserMapper;
 import com.danielborges.bookstoremanager.users.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,16 @@ public class UserService {
         User userToCreate = userMapper.toModel(userToCreateDTO);
         User createdUser = userRepository.save(userToCreate);
         return creationMessage(createdUser);
+    }
+
+    public void delete(Long id) {
+        verifyIfExists(id);
+        userRepository.deleteById(id);
+    }
+
+    private void verifyIfExists(Long id) {
+        userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     private void verifyIfExists(String email, String username) {
