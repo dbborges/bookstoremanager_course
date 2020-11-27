@@ -1,7 +1,6 @@
 package com.danielborges.bookstoremanager.users.service;
 
-import com.danielborges.bookstoremanager.authors.mapper.AuthorMapper;
-import com.danielborges.bookstoremanager.authors.repository.AuthorRepository;
+import com.danielborges.bookstoremanager.users.utils.MessageDTOUtils;
 import com.danielborges.bookstoremanager.users.dto.MessageDTO;
 import com.danielborges.bookstoremanager.users.dto.UserDTO;
 import com.danielborges.bookstoremanager.users.entity.User;
@@ -12,8 +11,10 @@ import com.danielborges.bookstoremanager.users.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
+
+import static com.danielborges.bookstoremanager.users.utils.MessageDTOUtils.creationMessage;
+import static com.danielborges.bookstoremanager.users.utils.MessageDTOUtils.updateMessage;
 
 @Service
 public class UserService {
@@ -34,13 +35,24 @@ public class UserService {
         return creationMessage(createdUser);
     }
 
+    public MessageDTO update(Long id, UserDTO userToUpdateDTO) {
+        User foundUser = verifyAndGetIfExists(id);
+
+        userToUpdateDTO.setId(foundUser.getId());
+        User userToUpdate = userMapper.toModel(userToUpdateDTO);
+        userToUpdate.setCreatedDate(foundUser.getCreatedDate());
+
+        User updatedUser = userRepository.save(userToUpdate);
+        return updateMessage(updatedUser);
+    }
+
     public void delete(Long id) {
-        verifyIfExists(id);
+        verifyAndGetIfExists(id);
         userRepository.deleteById(id);
     }
 
-    private void verifyIfExists(Long id) {
-        userRepository.findById(id)
+    private User verifyAndGetIfExists(Long id) {
+        return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
     }
 
@@ -49,14 +61,5 @@ public class UserService {
         if(foundUser.isPresent()){
             throw new UserAlreadyExistsexception(email, username);
         }
-    }
-
-    private MessageDTO creationMessage(User createdUser) {
-        String createdUsername = createdUser.getUsername();
-        Long createdId = createdUser.getId();
-        String createdUserMessage = String.format("User %s with ID %s successfully created", createdUsername, createdId);
-        return MessageDTO.builder()
-                .message(createdUserMessage)
-                .build();
     }
 }
