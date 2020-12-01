@@ -3,6 +3,7 @@ package com.danielborges.bookstoremanager.users.entity;
 import com.danielborges.bookstoremanager.books.entity.Book;
 import com.danielborges.bookstoremanager.entity.Auditable;
 import com.danielborges.bookstoremanager.users.enums.Gender;
+import com.danielborges.bookstoremanager.users.enums.Role;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -34,11 +35,15 @@ public class User extends Auditable {
     private String username;
 
     @Column(nullable = false)
-    private String password;
+    private String password ;
 
     @Column(nullable = false, columnDefinition = "TIMESTAMP")
     private LocalDate birthDate;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Book> books;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Role role;
 }
