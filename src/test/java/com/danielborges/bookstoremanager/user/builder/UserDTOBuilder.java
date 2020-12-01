@@ -2,6 +2,7 @@ package com.danielborges.bookstoremanager.user.builder;
 
 import com.danielborges.bookstoremanager.users.dto.UserDTO;
 import com.danielborges.bookstoremanager.users.enums.Gender;
+import com.danielborges.bookstoremanager.users.enums.Role;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 
@@ -37,7 +38,10 @@ public class UserDTOBuilder {
     @Builder.Default
     private LocalDate birthDate = LocalDate.of(1990, 8, 12);
 
+    @Builder.Default
+    private Role role = Role.USER;
+
     public UserDTO buildUserDTO(){
-        return new UserDTO(id, name, age, gender, email, username, password, birthDate);
+        return new UserDTO(id, name, age, gender, email, username, password, birthDate, role);
     }
 }
